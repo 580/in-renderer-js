@@ -3,11 +3,14 @@
   "private": false,
   "version": "1.2.3",
   "files": [
+    "src",
     "dist",
     "index.d.ts"
   ],
   "browserslist": [
-    "> 0.25%",
+    "last 2 versions",
+    "not dead",
+    "> 0.2%",
     "not IE 11",
     "not op_mini all"
   ],
@@ -35,7 +38,7 @@
     }
   },
   "repository": {
-    "url": "git@github.com:hogekai/in-renderer-js.git"
+    "url": "git@github.com:580/in-renderer-js.git"
   },
   "author": {
     "name": "Kai Miyamoto"
