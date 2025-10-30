@@ -1,12 +1,46 @@
 import { InvalidBidException } from "@/exception/InvalidBidException";
 import { i18n } from "@/I18N";
 import { fluidPlayer } from "@/lib/fluidPlayer";
-import { FluidPlayerFactoryOptions } from "@/type";
+import { FluidPlayerFactoryOptions, IFluidPlayerEvent, IVastAdavanced } from "@/type";
 import { encode } from "js-base64";
+
+type TVieoAdData = {
+      isLinear?: boolean;
+      isVideoAdData: boolean;
+      // contentType: string;
+      // vastUrl: string;
+      currentTime: number;
+      // autoplay: boolean;
+      // muted: boolean;
+      // volume: number;
+      // videoAdInViewDuration: number;
+      videoAdStatus: string; // loaded | started | skipped | complete | error | stop
+      videoAdDuration: number;
+      updatedAt?: number; // video status updated at
+      // width?: number;
+      // height?: number;
+  };
 
 export class FluidPlayerFactory {
   private target: HTMLVideoElement;
   private options: FluidPlayerFactoryOptions;
+
+  public adData: TVieoAdData = {
+    isLinear: true,
+    isVideoAdData: true,
+    // contentType: '',
+    // vastUrl: '',
+    currentTime: 0,
+    // autoplay: true,
+    // muted: true,
+    // volume: 0,
+    // videoAdInViewDuration: 0,
+    videoAdStatus: '',
+    videoAdDuration: 0,
+    updatedAt: 0,
+    // width: 1,
+    // height: 1,
+  }
 
   public constructor(
     targetContainer: HTMLDivElement,
@@ -21,14 +55,15 @@ export class FluidPlayerFactory {
   }
 
   public async create(
-    rePlay: () => any,
-    videoEnded?: () => any
+    _rePlay: () => any,
+    vastAdvanced: IVastAdavanced = {},
+    playerEvent: IFluidPlayerEvent = {},
   ): Promise<FluidPlayerInstance> {
     const player = fluidPlayer(this.target, {
       layoutControls: {
-        roundedCorners: 8,
+        roundedCorners: 0,
         fillToContainer: true,
-        autoPlay: false,
+        autoPlay: true,
         mute: true,
         doubleclickFullscreen: false,
         keyboardControl: false,
@@ -50,14 +85,22 @@ export class FluidPlayerFactory {
           clickUrl: this.options.logo?.clickUrl,
           position: "bottom left",
         },
+        contextMenu: {
+          controls: false,
+        },
       },
       vastOptions: {
         allowVPAID: true,
-        showPlayButton: true,
+        adCTAText: false,
+        adClickable: false,
+        showPlayButton: false,
+        maxAllowedVastTagRedirects: 5,
+        showProgressbarMarkers: false,
+        vastTimeout: 12000,
         adList: [
           {
             adText: i18n.t("LearnMore"),
-            adClickable: true,
+            adClickable: false,
             roll: "preRoll",
             vastTag: await this.getVastTag(
               this.options.vastUrl,
@@ -66,71 +109,97 @@ export class FluidPlayerFactory {
           },
         ],
         vastAdvanced: {
+          vastLoadedCallback: () => {
+            vastAdvanced.vastLoaded && vastAdvanced.vastLoaded();
+          },
+          noVastVideoCallback: () => {
+            vastAdvanced.noVastVideo && vastAdvanced.noVastVideo();
+          },
           vastVideoEndedCallback: () => {
-            this.attachEndCard(player, rePlay);
-            videoEnded && videoEnded();
+            console.log('vastVideoEndedCallback');
+            // this.attachEndCard(player, rePlay);
+            vastAdvanced.vastVideoEnded && vastAdvanced.vastVideoEnded();
           },
         },
       },
     });
 
+    player.on('playing', (e: any) => { // start
+      if (!this.adData.videoAdStatus) {
+        this.adData.videoAdStatus = 'started';
+        this.adData.videoAdDuration = e.srcElement.duration;
+        playerEvent.start && playerEvent.start(this.adData);
+      }
+    });
+
+    player.on('ended', () => {
+      this.adData.videoAdStatus = 'complete';
+    });
+
+    player.on('timeupdate', (_e: any, info: any) => { // progress
+      // console.log('progress', e, info);
+      this.adData.currentTime = info.currentTime;
+      this.adData.updatedAt = Date.now();
+      playerEvent.progress && playerEvent.progress(this.adData);
+    });
+
     return player;
   }
 
-  private attachEndCard(player: FluidPlayerInstance, rePlay: () => any) {
-    const container = this.getFluidContainer();
-    this.target.style.filter = "blur(8px)";
+  // private attachEndCard(player: FluidPlayerInstance, rePlay: () => any) {
+  //   const container = this.getFluidContainer();
+  //   this.target.style.filter = "blur(8px)";
 
-    this.removeVolumeButtons(container);
+  //   this.removeVolumeButtons(container);
 
-    const { endCard, replayButton } = this.createReplayButtonElement();
+  //   const { endCard, replayButton } = this.createReplayButtonElement();
 
-    replayButton.addEventListener("click", () => {
-      player.destroy();
-      rePlay();
-    });
+  //   replayButton.addEventListener("click", () => {
+  //     player.destroy();
+  //     rePlay();
+  //   });
 
-    const fluidPlayerContainer = this.target.parentElement as HTMLDivElement;
-    fluidPlayerContainer.appendChild(endCard);
-  }
+  //   const fluidPlayerContainer = this.target.parentElement as HTMLDivElement;
+  //   fluidPlayerContainer.appendChild(endCard);
+  // }
 
-  private removeVolumeButtons(container: HTMLDivElement) {
-    const volumeButton = container.querySelector(".fluid_button_volume");
-    const muteButton = container.querySelector(".fluid_button_mute");
+  // private removeVolumeButtons(container: HTMLDivElement) {
+  //   const volumeButton = container.querySelector(".fluid_button_volume");
+  //   const muteButton = container.querySelector(".fluid_button_mute");
 
-    volumeButton?.remove();
-    muteButton?.remove();
-  }
+  //   volumeButton?.remove();
+  //   muteButton?.remove();
+  // }
 
-  private createReplayButtonElement(): {
-    endCard: HTMLDivElement;
-    replayButton: HTMLDivElement;
-  } {
-    const endCard = document.createElement("div");
-    endCard.classList.add("ad_end_card");
+  // private createReplayButtonElement(): {
+  //   endCard: HTMLDivElement;
+  //   replayButton: HTMLDivElement;
+  // } {
+  //   const endCard = document.createElement("div");
+  //   endCard.classList.add("ad_end_card");
 
-    const replayButton = document.createElement("div");
-    replayButton.classList.add("ad_replay");
+  //   const replayButton = document.createElement("div");
+  //   replayButton.classList.add("ad_replay");
 
-    const replayIcon = document.createElement("div");
-    replayIcon.classList.add("ad_replay_icon");
-    replayButton.appendChild(replayIcon);
+  //   const replayIcon = document.createElement("div");
+  //   replayIcon.classList.add("ad_replay_icon");
+  //   replayButton.appendChild(replayIcon);
 
-    const replayText = document.createElement("span");
-    replayText.textContent = i18n.t("Replay");
-    replayButton.appendChild(replayText);
+  //   const replayText = document.createElement("span");
+  //   replayText.textContent = i18n.t("Replay");
+  //   replayButton.appendChild(replayText);
 
-    endCard.appendChild(replayButton);
+  //   endCard.appendChild(replayButton);
 
-    return {
-      endCard: endCard,
-      replayButton: replayButton,
-    };
-  }
+  //   return {
+  //     endCard: endCard,
+  //     replayButton: replayButton,
+  //   };
+  // }
 
-  private getFluidContainer() {
-    return this.target.parentElement as HTMLDivElement;
-  }
+  // private getFluidContainer() {
+  //   return this.target.parentElement as HTMLDivElement;
+  // }
 
   private async getVastTag(vastUrl?: string, vastXml?: string) {
     if (vastXml) {

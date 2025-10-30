@@ -42,7 +42,7 @@ export class VideoAdRender {
     const aspectRatio = bid.playerHeight / bid.playerWidth;
 
     targetElement.style.display = "block";
-    targetElement.style.maxWidth = `${bid.playerWidth}px`;
+    // targetElement.style.maxWidth = `${bid.playerWidth}px`;
     targetElement.style.width = "100%";
 
     if (fullClickArea) {

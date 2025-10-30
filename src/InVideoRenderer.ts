@@ -1,4 +1,4 @@
-import { VideoRenderOptions } from "@/type";
+import { IFluidPlayerEvent, IVastAdavanced, VideoRenderOptions } from "@/type";
 import { InvalidTargetElementException } from "./exception/InvalidTargetElementException";
 import { Bid } from "./type/bid";
 import { DomainLogger } from "./DomainLogger";
@@ -11,7 +11,9 @@ export class InVideoRenderer {
   public async render(
     targetId: string,
     bid: Bid,
-    options: VideoRenderOptions = {}
+    options: VideoRenderOptions = {},
+    vastAdvanced: IVastAdavanced,
+    playerEvent: IFluidPlayerEvent,
   ) {
     const domainLogger = new DomainLogger(new Logger());
 
@@ -27,9 +29,13 @@ export class InVideoRenderer {
       const videoRenderApplicationService = new VideoRenderApplicationService(
         domainLogger, viewableTracker
       );
-      videoRenderApplicationService.render(target, bid, options);
+      videoRenderApplicationService.render(target, bid, options, vastAdvanced, playerEvent);
     } else {
       throw new InvalidBidException("Unsupported formats.");
     }
+  }
+
+  public getCurrentAdData() {
+    return {};
   }
 }

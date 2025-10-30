@@ -1,7 +1,7 @@
 import { FluidPlayerFactory } from "./core/FluidPlayerFactory";
 import { VideoAdRender } from "./core/VideoAdRender";
 import { InvalidBidException } from "./exception";
-import { VideoRenderOptions } from "./type";
+import { IFluidPlayerEvent, IVastAdavanced, VideoRenderOptions } from "./type";
 import { VideoBid } from "./type/bid";
 import { IDomainLogger, IViewableTracker } from "./type/interface";
 
@@ -20,7 +20,9 @@ export class VideoRenderApplicationService {
   public async render(
     targetElement: HTMLDivElement,
     bid: VideoBid,
-    options: VideoRenderOptions
+    options: VideoRenderOptions,
+    vastAdvanced: IVastAdavanced = {},
+    playerEvent: IFluidPlayerEvent = {},
   ) {
     try {
       const fluidPlayerFactory = new FluidPlayerFactory(targetElement, {
@@ -29,8 +31,9 @@ export class VideoRenderApplicationService {
         logo: options.logo,
       });
       const fluidPlayer = await fluidPlayerFactory.create(
-        () => this.render(targetElement, bid, options),
-        options.onAdVideoComplete
+        () => this.render(targetElement, bid, options, vastAdvanced, playerEvent),
+        vastAdvanced,
+        playerEvent,
       );
 
       const videoAdRender = new VideoAdRender(this.viewableTracker);
