@@ -1,8 +1,8 @@
-import { InvalidBidException } from "@/exception/InvalidBidException";
+// import { InvalidBidException } from "@/exception/InvalidBidException";
 import { i18n } from "@/I18N";
 import { fluidPlayer } from "@/lib/fluidPlayer";
 import { FluidPlayerFactoryOptions, IFluidPlayerEvent, IVastAdavanced } from "@/type";
-import { encode } from "js-base64";
+// import { encode } from "js-base64";
 
 type TVieoAdData = {
       isLinear?: boolean;
@@ -102,10 +102,11 @@ export class FluidPlayerFactory {
             adText: i18n.t("LearnMore"),
             adClickable: false,
             roll: "preRoll",
-            vastTag: await this.getVastTag(
-              this.options.vastUrl,
-              this.options.vastXml
-            ),
+            // vastTag: await this.getVastTag(
+            //   this.options.vastUrl,
+            //   this.options.vastXml
+            // ),
+            vastTag: this.options.vastUrl ? this.options.vastUrl : this.getVastDataUrl(this.options.vastXml),
           },
         ],
         vastAdvanced: {
@@ -201,36 +202,36 @@ export class FluidPlayerFactory {
   //   return this.target.parentElement as HTMLDivElement;
   // }
 
-  private async getVastTag(vastUrl?: string, vastXml?: string) {
-    if (vastXml) {
-      if (vastUrl) {
-        navigator.sendBeacon(vastUrl);
-      }
+  // private async getVastTag(vastUrl?: string, vastXml?: string) {
+  //   if (vastXml) {
+  //     if (vastUrl) {
+  //       navigator.sendBeacon(vastUrl);
+  //     }
 
-      return this.getVastDataUrl(vastXml);
-    } else if (vastUrl) {
-      const vast = await this.getVastByVastUrl(vastUrl);
-      return this.getVastDataUrl(vast);
-    }
+  //     return this.getVastDataUrl(vastXml);
+  //   } else if (vastUrl) {
+  //     const vast = await this.getVastByVastUrl(vastUrl);
+  //     return this.getVastDataUrl(vast);
+  //   }
 
-    throw new InvalidBidException();
-  }
+  //   throw new InvalidBidException();
+  // }
 
-  private async getVastByVastUrl(vastUrl: string): Promise<string> {
-    const response = await fetch(vastUrl);
-    const vastXml = await response.text();
+  // private async getVastByVastUrl(vastUrl: string): Promise<string> {
+  //   const response = await fetch(vastUrl);
+  //   const vastXml = await response.text();
 
-    return vastXml;
-  }
+  //   return vastXml;
+  // }
 
-  private getVastDataUrl(vastXml: string): string {
-    return this.getVastDataUrlFromVastXml(vastXml);
+  private getVastDataUrl(vastXml: string | undefined): string {
+    return vastXml ? this.getVastDataUrlFromVastXml(vastXml) : '';
   }
 
   private getVastDataUrlFromVastXml(vastXml: string): string {
     return (
       "data:text/xml;charset=utf-8;base64," +
-      encode(vastXml.replace(/\\"/g, '"'))
+      btoa(vastXml.replace(/\\"/g, '"'))
     );
   }
 }

@@ -13,8 +13,6 @@ export declare class FluidPlayerFactory {
     adData: TVieoAdData;
     constructor(targetContainer: HTMLDivElement, options: FluidPlayerFactoryOptions);
     create(_rePlay: () => any, vastAdvanced?: IVastAdavanced, playerEvent?: IFluidPlayerEvent): Promise<FluidPlayerInstance>;
-    private getVastTag;
-    private getVastByVastUrl;
     private getVastDataUrl;
     private getVastDataUrlFromVastXml;
 }
