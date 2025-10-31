@@ -44,14 +44,16 @@ export class VideoAdRender {
     targetElement.style.display = "block";
     // targetElement.style.maxWidth = `${bid.playerWidth}px`;
     targetElement.style.width = "100%";
+    targetElement.style.height = "0";
+    targetElement.style.paddingBottom = `${aspectRatio * 100}%`;
 
     if (fullClickArea) {
       targetElement.classList.add("full-click-area");
     }
 
-    const containerWidth = targetElement.offsetWidth;
-    const height = containerWidth * aspectRatio;
-    targetElement.style.height = height + "px";
+    // const containerWidth = targetElement.offsetWidth;
+    // const height = containerWidth * aspectRatio;
+    // targetElement.style.height = height + "px";
 
     // window.addEventListener("resize", () => {
     //   const newWidth = targetElement.offsetWidth;

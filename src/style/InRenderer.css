@@ -15,6 +15,7 @@
     display: none !important;
   }
 
+  .fluid_controls_container,
   .fluid_button.fluid_button_volume, 
   .fluid_button.fluid_button_mute, 
   .fluid_ad_playing, 
