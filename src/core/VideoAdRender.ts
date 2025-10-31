@@ -53,10 +53,10 @@ export class VideoAdRender {
     const height = containerWidth * aspectRatio;
     targetElement.style.height = height + "px";
 
-    window.addEventListener("resize", () => {
-      const newWidth = targetElement.offsetWidth;
-      const newHeight = newWidth * aspectRatio;
-      targetElement.style.height = newHeight + "px";
-    });
+    // window.addEventListener("resize", () => {
+    //   const newWidth = targetElement.offsetWidth;
+    //   const newHeight = newWidth * aspectRatio;
+    //   targetElement.style.height = newHeight + "px";
+    // });
   }
 }

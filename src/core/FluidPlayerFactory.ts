@@ -63,7 +63,7 @@ export class FluidPlayerFactory {
       layoutControls: {
         roundedCorners: 0,
         fillToContainer: true,
-        autoPlay: true,
+        autoPlay: false,
         mute: true,
         doubleclickFullscreen: false,
         keyboardControl: false,
@@ -94,7 +94,7 @@ export class FluidPlayerFactory {
         adCTAText: false,
         adClickable: false,
         showPlayButton: false,
-        maxAllowedVastTagRedirects: 5,
+        maxAllowedVastTagRedirects: 8,
         showProgressbarMarkers: false,
         vastTimeout: 12000,
         adList: [
