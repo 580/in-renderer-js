@@ -32,6 +32,10 @@ export class VideoAdRender {
         videoPlayer.play();
       }
     });
+
+    setTimeout(() => {
+      videoPlayer.play();
+    });
   }
 
   private renderContainer(
