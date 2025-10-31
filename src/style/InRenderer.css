@@ -1,10 +1,18 @@
 .fluid_player_layout_in-renderer-js {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
   .ad_countdown {
     display: none;
   }
 
   video {
     position: relative;
+    width: 100%;
+    height: 100%;
   }
 
   .fluid_player_skip_offset {
