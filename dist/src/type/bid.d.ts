@@ -5,6 +5,7 @@ export type VideoBid = {
     vastUrl?: string;
     playerWidth: number;
     playerHeight: number;
+    aspectRatio?: string;
     mediaType: "video";
 };
 export type BannerBid = {

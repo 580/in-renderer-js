@@ -90,7 +90,7 @@ export class FluidPlayerFactory {
         },
       },
       vastOptions: {
-        allowVPAID: true,
+        allowVPAID: false,
         adCTAText: false,
         adClickable: false,
         showPlayButton: false,

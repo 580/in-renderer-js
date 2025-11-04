@@ -43,13 +43,13 @@ export class VideoAdRender {
     bid: VideoBid,
     fullClickArea?: boolean
   ) {
-    const aspectRatio = bid.playerHeight / bid.playerWidth;
+    const aspectRatio = bid.aspectRatio || `${(bid.playerHeight / bid.playerWidth) * 100}%`;
 
     targetElement.style.display = "block";
     // targetElement.style.maxWidth = `${bid.playerWidth}px`;
     targetElement.style.width = "100%";
     targetElement.style.height = "0";
-    targetElement.style.paddingBottom = `${aspectRatio * 100}%`;
+    targetElement.style.paddingBottom = aspectRatio;
 
     if (fullClickArea) {
       targetElement.classList.add("full-click-area");
