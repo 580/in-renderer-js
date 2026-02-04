@@ -571,11 +571,3 @@ And start project locally:
 ```sh
 pnpm run dev
 ```
-
-## From the Developer
-
-Recently, I've felt that the open-source community in web ad technology has been stagnating. While there are various factors contributing to this, I don't want to accept this situation as it is. I plan to develop various modern solutions, from small to large scale, to energize this industry.
-
-If you're interested in my future development work and would like to provide advice, feedback, or help with practical testing, please contact me.
-
-LinkedIn: https://www.linkedin.com/in/kai-miyamoto-87393732b/
